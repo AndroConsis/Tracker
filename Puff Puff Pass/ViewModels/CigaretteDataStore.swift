@@ -151,6 +151,7 @@ class CigaretteDataStore: ObservableObject {
                 .value
             if let insertedEntry = response.first {
                 self.allEntries.insert(insertedEntry, at: 0)
+                self.totalCount += 1  // Increment total count for real-time updates
             }
         } catch let error as PostgrestError {
             self.errorMessage = "Failed to add entry: \(error.message)"
@@ -180,6 +181,7 @@ class CigaretteDataStore: ObservableObject {
                 .eq("id", value: entry.id.uuidString)
                 .execute()
             self.allEntries.removeAll { $0.id == entry.id }
+            self.totalCount = max(0, self.totalCount - 1)  // Decrement total count, but don't go below 0
         } catch let error as PostgrestError {
             self.errorMessage = "Failed to delete entry: \(error.message)"
         } catch {

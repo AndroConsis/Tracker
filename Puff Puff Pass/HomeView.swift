@@ -27,6 +27,7 @@ struct HomeView: View {
     @State private var showWelcomeBox = false
     @State private var showReasonSelection = false
     @State private var lastLoggedReason: SmokingReason?
+    @State private var isDataLoaded = false
     
     @StateObject private var dataStore = CigaretteDataStore.shared
     @StateObject private var userManager = UserManager.shared
@@ -84,8 +85,37 @@ struct HomeView: View {
                 // Circle Counter
                 ZStack {
                     Circle()
-                        .fill(Color.gray.opacity(0.1))
+                        .fill(
+                            LinearGradient(
+                                gradient: Gradient(colors: [
+                                    Color.white.opacity(0.25),
+                                    Color.white.opacity(0.1)
+                                ]),
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .background(
+                            Circle()
+                                .fill(Color.gray.opacity(0.1))
+                        )
+                        .overlay(
+                            Circle()
+                                .stroke(
+                                    LinearGradient(
+                                        gradient: Gradient(colors: [
+                                            Color.white.opacity(0.3),
+                                            Color.clear
+                                        ]),
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    ),
+                                    lineWidth: 1
+                                )
+                        )
                         .frame(width: 200, height: 200)
+                        .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 5)
+                        .shadow(color: Color.white.opacity(0.2), radius: 1, x: 0, y: -1)
 
                     VStack {
                         Text("\(animatedCount)")
@@ -184,9 +214,9 @@ struct HomeView: View {
 
                 // Stats Tabs - FIXED
                 HStack(spacing: 20) {
-                    StatCard(title: "Total", value: "\(totalCigarettes)", systemIcon: "flame")
-                    StatCard(title: "Packs", value: "\(totalPacks)", systemIcon: "cube.box")
-                    StatCard(title: "Spent", value: formattedSpent(), systemIcon: "creditcard")
+                    CubeView(title: "Total", dataStore: dataStore, userManager: userManager)
+                    PacksCubeView(title: "Packs", dataStore: dataStore, userManager: userManager)
+                    SpentCubeView(title: "Spent", dataStore: dataStore, userManager: userManager)
                 }
                 .padding(.horizontal)
 
@@ -268,8 +298,9 @@ struct HomeView: View {
                     await dataStore.loadEntries()
                     await dataStore.loadTotalCount()
                     
-                    // Animate count after entries are loaded
+                    // Mark data as loaded and animate count after entries are loaded
                     await MainActor.run {
+                        isDataLoaded = true
                         // Only animate if loading was successful
                         if dataStore.errorMessage == nil {
                             animateCount(to: todayEntries.count)
@@ -292,6 +323,7 @@ struct HomeView: View {
                 await dataStore.refresh()
                 await dataStore.loadTotalCount()
                 await MainActor.run {
+                    isDataLoaded = true
                     if dataStore.errorMessage == nil {
                         animateCount(to: todayEntries.count)
                     }
