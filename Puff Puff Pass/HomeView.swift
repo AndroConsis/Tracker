@@ -179,7 +179,7 @@ struct HomeView: View {
                                 
                                 // Show reason selection after cigarette is logged
                                 print("🎯 [HOME VIEW] Showing reason selection")
-                                showReasonSelection = true
+                                // showReasonSelection = true  // DISABLED: Hide reason selection to prevent blocking count display
                             }
                             isAddingEntry = false
                         }

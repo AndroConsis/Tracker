@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "swift-ios-server": {
+      "command": "python3",
+      "args": ["/Users/prateek/Projects/Puff Puff Pass/working_mcp_server.py"],
+      "env": {
+        "PYTHONPATH": "/Users/prateek/Projects/Puff Puff Pass"
+      }
+    }
+  }
+}
